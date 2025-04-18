@@ -1,36 +1,58 @@
 import { StyleSheet, View } from 'react-native';
-import { Avatar, Button, Card, Divider, List, Text } from 'react-native-paper';
+import { Avatar, Button, Card, Divider, List, Text, useTheme } from 'react-native-paper';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function ProfileScreen() {
+  const theme = useTheme();
+  const colorScheme = useColorScheme();
+  
+  // Create dynamic styles based on theme
+  const dynamicStyles = {
+    container: {
+      backgroundColor: theme.colors.background,
+    },
+    name: {
+      color: theme.colors.onBackground,
+    },
+    email: {
+      color: theme.colors.onSurfaceVariant,
+    },
+    divider: {
+      backgroundColor: theme.colors.outlineVariant,
+    },
+    card: {
+      backgroundColor: theme.colors.surface,
+    },
+  };
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, dynamicStyles.container]}>
       <View style={styles.profileHeader}>
-        <Avatar.Icon size={80} icon="account" />
-        <Text style={styles.name}>Example User</Text>
-        <Text style={styles.email}>user@example.com</Text>
+        <Avatar.Icon size={80} icon="account" color={theme.colors.onPrimary} backgroundColor={theme.colors.primary} />
+        <Text style={[styles.name, dynamicStyles.name]}>Example User</Text>
+        <Text style={[styles.email, dynamicStyles.email]}>user@example.com</Text>
       </View>
       
-      <Divider style={styles.divider} />
+      <Divider style={[styles.divider, dynamicStyles.divider]} />
       
-      <Card style={styles.card}>
+      <Card style={[styles.card, dynamicStyles.card]}>
         <Card.Title title="Profile Information" />
         <Card.Content>
           <List.Item
             title="Username"
             description="exampleuser"
-            left={(props) => <List.Icon {...props} icon="account" />}
+            left={(props) => <List.Icon {...props} icon="account" color={theme.colors.primary} />}
           />
           <Divider />
           <List.Item
             title="Email"
             description="user@example.com"
-            left={(props) => <List.Icon {...props} icon="email" />}
+            left={(props) => <List.Icon {...props} icon="email" color={theme.colors.primary} />}
           />
           <Divider />
           <List.Item
             title="Member Since"
             description="April 17, 2025"
-            left={(props) => <List.Icon {...props} icon="calendar" />}
+            left={(props) => <List.Icon {...props} icon="calendar" color={theme.colors.primary} />}
           />
         </Card.Content>
       </Card>

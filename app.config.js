@@ -1,12 +1,12 @@
 module.exports = {
   expo: {
     name: 'Consensual Expo App',
-    slug: 'consensual-expo-app',
+    slug: 'consensual-template',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     userInterfaceStyle: 'automatic',
-    owner: 'consensual',
+    owner: 'cmaujean',
     runtimeVersion: {
       policy: 'sdkVersion',
     },
@@ -14,7 +14,7 @@ module.exports = {
       url: 'https://u.expo.dev/your-project-id',
       enabled: true,
     },
-    scheme: 'consensu.al',
+    scheme: 'consensual',
     splash: {
       image: './assets/images/splash-icon.png',
       resizeMode: 'contain',
@@ -31,12 +31,14 @@ module.exports = {
       },
       package: 'al.consensu.expotemplate',
       permissions: [],
+      jsEngine: 'hermes',
     },
     web: {
       favicon: './assets/images/favicon.png',
     },
-    plugins: ['expo-router', 'expo-dev-client'],
+    plugins: ['expo-router'],
     experiments: {
+      typedRoutes: true,
       tsconfigPaths: true,
     },
     extra: {
@@ -44,7 +46,7 @@ module.exports = {
         origin: false,
       },
       eas: {
-        projectId: 'your-project-id',
+        projectId: 'b8f0d714-4276-4058-9a3c-10464fdbe2a5',
       },
     },
   },

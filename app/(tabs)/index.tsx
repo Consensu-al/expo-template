@@ -1,13 +1,16 @@
 import { FlashList } from '@shopify/flash-list';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Card, Text } from 'react-native-paper';
+import { Button, Card, Text, useTheme } from 'react-native-paper';
 import { createId } from '@paralleldrive/cuid2';
 import { useItemStore } from '../../stores/itemStore';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function HomeScreen() {
   const { items, addItem, removeItem } = useItemStore();
   const [refreshKey, setRefreshKey] = useState(0);
+  const theme = useTheme();
+  const colorScheme = useColorScheme();
 
   useEffect(() => {
     // Add some initial items if none exist
@@ -37,16 +40,29 @@ export default function HomeScreen() {
     setRefreshKey(prev => prev + 1);
   };
 
+  // Create dynamic styles based on theme
+  const dynamicStyles = {
+    container: {
+      backgroundColor: theme.colors.background,
+    },
+    title: {
+      color: theme.colors.onBackground,
+    },
+    card: {
+      backgroundColor: theme.colors.surface,
+    },
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Example Content</Text>
+    <View style={[styles.container, dynamicStyles.container]}>
+      <Text style={[styles.title, dynamicStyles.title]}>Example Content</Text>
       <FlashList
         data={items}
         estimatedItemSize={200}
         keyExtractor={(item) => item.id}
         extraData={refreshKey}
         renderItem={({ item }) => (
-          <Card style={styles.card} onPress={() => {
+          <Card style={[styles.card, dynamicStyles.card]} onPress={() => {
             removeItem(item.id);
             setRefreshKey(prev => prev + 1);
           }}>
