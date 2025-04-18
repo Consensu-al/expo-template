@@ -1,50 +1,112 @@
-# Welcome to your Expo app 👋
+# Consensual Expo Template
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern Expo template with a robust stack for building React Native applications using best practices and high-performance libraries.
 
-## Get started
+## Features
+
+- 🧰 **Expo Router** - File-based routing with nested tabs and drawer navigation
+- 🔄 **Zustand** - Simple, fast state management
+- ✅ **Zod** - TypeScript-first schema validation
+- 🗃️ **Drizzle with SQLite** - Type-safe database toolkit
+- 🔐 **Expo Secure Store** - Secure local storage
+- 🎨 **React Native Paper** - Material Design components and icons
+- ⚡ **@shopify/flash-list** - High-performance lists
+- 🧩 **@paralleldrive/cuid2** - Collision-resistant IDs
+- 🔍 **Biome** - Fast linting and formatting
+
+## Installation
+
+```bash
+bunx create-expo-app --template consensual-expo-template
+```
+
+## Getting Started
 
 1. Install dependencies
-
    ```bash
-   npm install
+   cd your-app-name
+   bun install
    ```
 
 2. Start the app
-
    ```bash
-    npx expo start
+   bun run start
    ```
 
-In the output, you'll find options to open the app in a
+3. Open on your preferred platform
+   ```bash
+   # iOS
+   bun run ios
+   
+   # Android
+   bun run android
+   
+   # Web
+   bun run web
+   ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Project Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+your-app/
+├── app/                  # Main application code (Expo Router)
+│   ├── (tabs)/           # Bottom tab navigator screens
+│   │   ├── index.tsx     # Home screen
+│   │   ├── explore.tsx   # Explore screen
+│   │   └── profile.tsx   # Profile screen
+│   ├── about/            # About screen (accessible via drawer)
+│   ├── settings/         # Settings screen (accessible via drawer)
+│   └── _layout.tsx       # Root layout with drawer navigator
+├── assets/               # Static assets
+├── components/           # Reusable components
+├── constants/            # App constants
+├── db/                   # Database schema and client
+│   ├── index.ts          # Database client setup
+│   └── schema.ts         # Drizzle schema definitions
+├── hooks/                # Custom React hooks
+├── stores/               # Zustand stores
+└── CLAUDE.md             # AI Assistant guidelines
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Included Features
 
-## Learn more
+- **Drawer Navigation** - Main navigation with hamburger menu
+- **Tab Navigation** - Bottom tabs for main app sections
+- **Dark Mode Support** - Automatic theme detection with React Native Paper
+- **Database Integration** - SQLite with Drizzle ORM
+- **State Management** - Zustand for global state
+- **Form Validation** - Zod for schema validation
+- **Optimized Lists** - FlashList for better performance
 
-To learn more about developing your project with Expo, look at the following resources:
+## Development Commands
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+# Start development server
+bun run start
 
-## Join the community
+# Run on iOS
+bun run ios
 
-Join our community of developers creating universal apps.
+# Run on Android
+bun run android
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# Run on Web
+bun run web
+
+# Run linting
+bun run lint
+
+# Run formatting
+bun run format
+
+# Run tests
+bun run test
+```
+
+## Learn More
+
+- [Expo Documentation](https://docs.expo.dev/)
+- [React Native Paper](https://reactnativepaper.com/)
+- [Zustand](https://github.com/pmndrs/zustand)
+- [Drizzle ORM](https://orm.drizzle.team/)
+- [Expo Router](https://docs.expo.dev/router/introduction/)
