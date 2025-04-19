@@ -1,14 +1,14 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { Card, List, Text, Divider, useTheme } from 'react-native-paper';
-import Constants from 'expo-constants';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useColorScheme } from "@/hooks/useColorScheme";
+import Constants from "expo-constants";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Card, Divider, List, Text, useTheme } from "react-native-paper";
 
 export default function AboutScreen() {
   // Get package.json version using Constants
-  const version = Constants.expoConfig?.version || '0.0.0';
+  const version = Constants.expoConfig?.version || "0.0.0";
   const theme = useTheme();
   const colorScheme = useColorScheme();
-  
+
   // Create dynamic styles based on theme
   const dynamicStyles = {
     container: {
@@ -18,21 +18,21 @@ export default function AboutScreen() {
       color: theme.colors.onBackground,
     },
   };
-  
+
   return (
     <ScrollView style={[styles.container, dynamicStyles.container]}>
       <Text style={[styles.title, dynamicStyles.title]}>About This App</Text>
-      
+
       <Card style={[styles.card, { backgroundColor: theme.colors.elevation.level1 }]}>
         <Card.Title title="App Information" titleVariant="titleLarge" />
         <Card.Content>
           <Text variant="bodyMedium">
-            This app was created using the Consensual Expo Template, which provides a solid foundation
-            for building React Native applications with Expo Router.
+            This app was created using the Consensual Expo Template, which provides a solid
+            foundation for building React Native applications with Expo Router.
           </Text>
         </Card.Content>
       </Card>
-      
+
       <Card style={[styles.card, { backgroundColor: theme.colors.elevation.level1 }]}>
         <Card.Title title="Technology Stack" titleVariant="titleLarge" />
         <Card.Content>
@@ -51,7 +51,9 @@ export default function AboutScreen() {
           <List.Item
             title="Zod"
             description="Data validation"
-            left={(props) => <List.Icon {...props} icon="check-circle" color={theme.colors.primary} />}
+            left={(props) => (
+              <List.Icon {...props} icon="check-circle" color={theme.colors.primary} />
+            )}
           />
           <Divider />
           <List.Item
@@ -63,17 +65,22 @@ export default function AboutScreen() {
           <List.Item
             title="React Native Paper"
             description="Material Design components"
-            left={(props) => <List.Icon {...props} icon="material-design" color={theme.colors.primary} />}
+            left={(props) => (
+              <List.Icon {...props} icon="material-design" color={theme.colors.primary} />
+            )}
           />
         </Card.Content>
       </Card>
-      
+
       <Card style={[styles.card, { backgroundColor: theme.colors.elevation.level1 }]}>
         <Card.Title title="Version" titleVariant="titleLarge" />
         <Card.Content>
           <Text variant="bodyMedium">{version}</Text>
-          <Text variant="bodySmall" style={[styles.buildInfo, { color: theme.colors.onSurfaceVariant }]}>
-            Build ID: {Constants.expoConfig?.extra?.buildNumber || 'Development'}
+          <Text
+            variant="bodySmall"
+            style={[styles.buildInfo, { color: theme.colors.onSurfaceVariant }]}
+          >
+            Build ID: {Constants.expoConfig?.extra?.buildNumber || "Development"}
           </Text>
         </Card.Content>
       </Card>
@@ -88,7 +95,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
   },
   card: {

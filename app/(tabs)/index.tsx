@@ -1,44 +1,15 @@
-import { FlashList } from '@shopify/flash-list';
-import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Button, Card, Text, useTheme } from 'react-native-paper';
-import { createId } from '@paralleldrive/cuid2';
-import { useItemStore } from '../../stores/itemStore';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { logger } from "@/lib/logger";
+import { createId } from "@paralleldrive/cuid2";
+import { FlashList } from "@shopify/flash-list";
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { Button, Card, Text, useTheme } from "react-native-paper";
 
 export default function HomeScreen() {
-  const { items, addItem, removeItem } = useItemStore();
   const [refreshKey, setRefreshKey] = useState(0);
   const theme = useTheme();
   const colorScheme = useColorScheme();
-
-  useEffect(() => {
-    // Add some initial items if none exist
-    if (items.length === 0) {
-      addItem({
-        id: createId(),
-        title: 'Welcome to your template',
-        description: 'This is an example item. You can customize this screen to fit your needs.'
-      });
-      
-      addItem({
-        id: createId(),
-        title: 'Using Zustand for state management',
-        description: 'This example uses Zustand to manage state across components.'
-      });
-    }
-  }, []);
-
-  const handleAddRandomItem = () => {
-    const newItem = {
-      id: createId(),
-      title: `Item ${Math.floor(Math.random() * 1000)}`,
-      description: 'This is a randomly generated item. Tap to remove it.'
-    };
-    
-    addItem(newItem);
-    setRefreshKey(prev => prev + 1);
-  };
 
   // Create dynamic styles based on theme
   const dynamicStyles = {
@@ -46,6 +17,9 @@ export default function HomeScreen() {
       backgroundColor: theme.colors.background,
     },
     title: {
+      color: theme.colors.onBackground,
+    },
+    content: {
       color: theme.colors.onBackground,
     },
     card: {
@@ -56,31 +30,13 @@ export default function HomeScreen() {
   return (
     <View style={[styles.container, dynamicStyles.container]}>
       <Text style={[styles.title, dynamicStyles.title]}>Example Content</Text>
-      <FlashList
-        data={items}
-        estimatedItemSize={200}
-        keyExtractor={(item) => item.id}
-        extraData={refreshKey}
-        renderItem={({ item }) => (
-          <Card style={[styles.card, dynamicStyles.card]} onPress={() => {
-            removeItem(item.id);
-            setRefreshKey(prev => prev + 1);
-          }}>
-            <Card.Title title={item.title} />
-            <Card.Content>
-              <Text variant="bodyMedium">{item.description}</Text>
-            </Card.Content>
-          </Card>
-        )}
-      />
-      <Button 
-        mode="contained" 
-        onPress={handleAddRandomItem} 
-        style={styles.addButton}
-        icon="plus"
-      >
-        Add Random Item
-      </Button>
+      <Text style={[styles.content, dynamicStyles.content]}>
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+        ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </Text>
     </View>
   );
 }
@@ -91,16 +47,21 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 80,
   },
+  content: {
+    fontSize: 16,
+    fontWeight: "normal",
+    margin: 8,
+  },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
   },
   card: {
     marginBottom: 16,
   },
   addButton: {
-    position: 'absolute',
+    position: "absolute",
     right: 16,
     bottom: 16,
     borderRadius: 28,

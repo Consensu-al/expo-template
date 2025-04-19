@@ -1,11 +1,11 @@
-import { StyleSheet, View } from 'react-native';
-import { Avatar, Button, Card, Divider, List, Text, useTheme } from 'react-native-paper';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { StyleSheet, View } from "react-native";
+import { Avatar, Button, Card, Divider, List, Text, useTheme } from "react-native-paper";
 
 export default function ProfileScreen() {
   const theme = useTheme();
   const colorScheme = useColorScheme();
-  
+
   // Create dynamic styles based on theme
   const dynamicStyles = {
     container: {
@@ -27,13 +27,18 @@ export default function ProfileScreen() {
   return (
     <View style={[styles.container, dynamicStyles.container]}>
       <View style={styles.profileHeader}>
-        <Avatar.Icon size={80} icon="account" color={theme.colors.onPrimary} backgroundColor={theme.colors.primary} />
+        <Avatar.Icon
+          size={80}
+          icon="account"
+          color={theme.colors.onPrimary}
+          backgroundColor={theme.colors.primary}
+        />
         <Text style={[styles.name, dynamicStyles.name]}>Example User</Text>
         <Text style={[styles.email, dynamicStyles.email]}>user@example.com</Text>
       </View>
-      
+
       <Divider style={[styles.divider, dynamicStyles.divider]} />
-      
+
       <Card style={[styles.card, dynamicStyles.card]}>
         <Card.Title title="Profile Information" />
         <Card.Content>
@@ -56,22 +61,12 @@ export default function ProfileScreen() {
           />
         </Card.Content>
       </Card>
-      
-      <Button
-        mode="contained"
-        onPress={() => {}}
-        style={styles.button}
-        icon="account-edit"
-      >
+
+      <Button mode="contained" onPress={() => {}} style={styles.button} icon="account-edit">
         Edit Profile
       </Button>
-      
-      <Button
-        mode="outlined"
-        onPress={() => {}}
-        style={styles.button}
-        icon="logout"
-      >
+
+      <Button mode="outlined" onPress={() => {}} style={styles.button} icon="logout">
         Logout
       </Button>
     </View>
@@ -84,13 +79,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   profileHeader: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 24,
     marginTop: 16,
   },
   name: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 8,
   },
   email: {

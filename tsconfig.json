@@ -2,32 +2,18 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "module": "node16",
+    "moduleResolution": "node16",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@app/*": [
-        "./app/*"
-      ],
-      "@components/*": [
-        "./components/*"
-      ],
-      "@constants/*": [
-        "./constants/*"
-      ],
-      "@db/*": [
-        "./db/*"
-      ],
-      "@hooks/*": [
-        "./hooks/*"
-      ],
-      "@schemas/*": [
-        "./schemas/*"
-      ],
-      "@stores/*": [
-        "./stores/*"
-      ]
+      "@/*": ["./*"],
+      "@app/*": ["./app/*"],
+      "@components/*": ["./components/*"],
+      "@constants/*": ["./constants/*"],
+      "@db/*": ["./db/*"],
+      "@hooks/*": ["./hooks/*"],
+      "@schemas/*": ["./schemas/*"],
+      "@stores/*": ["./stores/*"]
     },
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -35,15 +21,6 @@
     "jsx": "react-native",
     "resolveJsonModule": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "babel.config.js",
-    "metro.config.js"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "types/**/*.d.ts"],
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js"]
 }
