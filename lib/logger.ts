@@ -53,12 +53,29 @@ export function initializeLogger() {
   return singletonLogger;
 }
 
-// Initialize the logger with default configuration
-initializeLoggerSingleton({
-  enabled: true,
-  secureMode: true,
-  console: __DEV__,
-});
+// Initialize the logger with database adapter
+try {
+  // Create a Drizzle adapter using the global db instance
+  const dbAdapter = createDrizzleAdapter(db as any);
+  
+  // Initialize with the database adapter and options
+  initializeLoggerSingleton({
+    enabled: true,
+    secureMode: true,
+    console: __DEV__,
+  }, dbAdapter);
+  
+  console.log("Logger initialized with database persistence");
+} catch (error) {
+  console.error("Failed to initialize logger with database:", error);
+  
+  // Fall back to default initialization without database
+  initializeLoggerSingleton({
+    enabled: true,
+    secureMode: true,
+    console: __DEV__,
+  });
+}
 
 // Export the singleton logger
 export { singletonLogger as logger };

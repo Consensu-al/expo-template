@@ -12,6 +12,7 @@ import { SQLiteProvider, openDatabaseSync } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
+import { DATABASE_NAME } from "@/constants/Database";
 
 import {
   Drawer,
@@ -26,8 +27,6 @@ import { logger as appLogger } from "@/lib/logger";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
-export const DATABASE_NAME = "consensual.db";
 
 export default function RootLayout() {
   const router = useRouter();
@@ -53,11 +52,17 @@ export default function RootLayout() {
     if (loaded) {
       (async () => {
         try {
-          // Log app startup
+          // Log app startup with additional info about the database state
           appLogger.log("Application started", {
             colorScheme,
             appStartTime: new Date().toISOString(),
+            dbMigrationSuccess: success,
+            appVersion: "1.0.0",
           });
+          
+          // Log a few more test entries
+          appLogger.warn("Test warning message", { test: true });
+          appLogger.error("Test error message", { test: true, sensitive: "SECRET_VALUE" });
         } catch (error) {
           console.error("Failed during app startup:", error);
         } finally {
@@ -66,7 +71,7 @@ export default function RootLayout() {
         }
       })();
     }
-  }, [loaded, colorScheme]);
+  }, [loaded, colorScheme, success]);
 
   if (!loaded) {
     return null;
