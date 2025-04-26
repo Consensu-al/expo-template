@@ -3,6 +3,12 @@ import { Tabs } from "expo-router";
 import { StyleSheet } from "react-native";
 import { Appbar, useTheme } from "react-native-paper";
 
+// Define type for tab icon props
+interface TabIconProps {
+  color: string;
+  focused: boolean;
+}
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const theme = useTheme();
@@ -32,7 +38,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color, focused }: TabIconProps) => (
             <Appbar.Action
               icon="home"
               color={color}
@@ -46,23 +52,9 @@ export default function TabLayout() {
         name="explore"
         options={{
           title: "Explore",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color, focused }: TabIconProps) => (
             <Appbar.Action
               icon="compass"
-              color={color}
-              size={22}
-              style={focused ? styles.activeIcon : styles.icon}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ color, focused }) => (
-            <Appbar.Action
-              icon="account"
               color={color}
               size={22}
               style={focused ? styles.activeIcon : styles.icon}

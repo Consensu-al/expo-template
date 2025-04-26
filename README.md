@@ -59,8 +59,7 @@ your-app/
 ├── app/                  # Main application code (Expo Router)
 │   ├── (tabs)/           # Bottom tab navigator screens
 │   │   ├── index.tsx     # Home screen
-│   │   ├── explore.tsx   # Explore screen
-│   │   └── profile.tsx   # Profile screen
+│   │   └── explore.tsx   # Explore screen
 │   ├── about/            # About screen (accessible via drawer)
 │   ├── settings/         # Settings screen (accessible via drawer)
 │   └── _layout.tsx       # Root layout with drawer navigator

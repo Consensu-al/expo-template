@@ -21,7 +21,7 @@ export function initializeLogger() {
   
   try {
     // Create a Drizzle adapter using the global db instance
-    const dbAdapter = createDrizzleAdapter(db);
+    const dbAdapter = createDrizzleAdapter(db as any);
     
     // Initialize the logger with the database adapter
     initializeLoggerSingleton(options, dbAdapter);

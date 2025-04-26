@@ -139,7 +139,7 @@ export default function SettingsScreen() {
             right={(props) => (
               <List.Icon {...props} icon="chevron-right" color={theme.colors.onSurfaceVariant} />
             )}
-            onPress={() => router.push('/settings/logs')}
+            onPress={() => router.push('/settings/logs' as const)}
           />
         </Card.Content>
       </Card>

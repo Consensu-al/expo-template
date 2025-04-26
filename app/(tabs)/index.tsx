@@ -1,8 +1,8 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { logger } from "@/lib/logger";
 import { createId } from "@paralleldrive/cuid2";
-import { FlashList } from "@shopify/flash-list";
-import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Card, Text, useTheme } from "react-native-paper";
 
@@ -10,6 +10,7 @@ export default function HomeScreen() {
   const [refreshKey, setRefreshKey] = useState(0);
   const theme = useTheme();
   const colorScheme = useColorScheme();
+  const router = useRouter();
 
   // Create dynamic styles based on theme
   const dynamicStyles = {
@@ -30,6 +31,22 @@ export default function HomeScreen() {
   return (
     <View style={[styles.container, dynamicStyles.container]}>
       <Text style={[styles.title, dynamicStyles.title]}>Example Content</Text>
+
+      <Card style={styles.card}>
+        <Card.Title title="Zod Validation Example" />
+        <Card.Content>
+          <Text style={styles.content}>
+            Check out the Zod validation example to see how to use Zod for form validation in this
+            application.
+          </Text>
+        </Card.Content>
+        <Card.Actions>
+          <Button mode="contained" onPress={() => router.push("/examples/validation")}>
+            View Example
+          </Button>
+        </Card.Actions>
+      </Card>
+
       <Text style={[styles.content, dynamicStyles.content]}>
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
         ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco

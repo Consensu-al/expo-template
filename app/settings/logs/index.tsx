@@ -58,16 +58,17 @@ export default function LogsScreen() {
         // Query logs from the database using drizzle
         const logData = await db.select().from(appLogsTable).orderBy(appLogsTable.timestamp);
         setLogs(logData as LogItem[]);
-      } catch (queryError) {
+      } catch (error) {
         // Specific handling for missing table error
+        const queryError = error as Error;
         console.error("Error querying logs table:", queryError);
-        
-        if (queryError.message && queryError.message.includes("no such table")) {
+
+        if (queryError.message?.includes("no such table")) {
           showSnackbar("Logs table not found. Please restart the app to create it.");
         } else {
           showSnackbar("Error loading logs");
         }
-        
+
         // Always set empty logs on error
         setLogs([]);
       }
@@ -111,7 +112,7 @@ export default function LogsScreen() {
   const formatTimestamp = (timestamp: string | Date) => {
     try {
       const date = new Date(timestamp);
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
     } catch (e) {
       return String(timestamp);
     }
@@ -119,11 +120,11 @@ export default function LogsScreen() {
 
   const getLogLevelColor = (level: string) => {
     switch (level.toLowerCase()) {
-      case 'log':
+      case "log":
         return theme.colors.primary;
-      case 'warn':
-        return theme.colors.warning || theme.colors.orange || '#FFA500';
-      case 'error':
+      case "warn":
+        return "#FFA500"; // Orange for warnings
+      case "error":
         return theme.colors.error;
       default:
         return theme.colors.onSurface;
@@ -143,11 +144,12 @@ export default function LogsScreen() {
   const renderLogItem = ({ item }: { item: LogItem }) => {
     const logLevelColor = getLogLevelColor(item.level);
     const metadata = parseMetadata(item.metadata);
-    
-    let displayMessage = item.message;
-    
+
+    const displayMessage = item.message;
+
     // Check if message contains any redacted content (marked with ***)
-    const containsRedactedContent = typeof displayMessage === 'string' && displayMessage.includes("***");
+    const containsRedactedContent =
+      typeof displayMessage === "string" && displayMessage.includes("***");
 
     return (
       <Card style={styles.logCard} mode="outlined">
@@ -162,17 +164,19 @@ export default function LogsScreen() {
               </Text>
             </View>
           </View>
-          
+
           <Text style={styles.message}>{displayMessage}</Text>
-          
+
           {metadata && (
             <View style={styles.metadataContainer}>
               <Divider style={styles.divider} />
-              <Text variant="labelSmall" style={styles.metadataLabel}>Metadata:</Text>
+              <Text variant="labelSmall" style={styles.metadataLabel}>
+                Metadata:
+              </Text>
               <ScrollView horizontal style={styles.metadataScroll}>
                 <Text variant="bodySmall" style={styles.metadata}>
-                  {typeof metadata === 'object' 
-                    ? JSON.stringify(metadata, null, 2) 
+                  {typeof metadata === "object"
+                    ? JSON.stringify(metadata, null, 2)
                     : String(metadata)}
                 </Text>
               </ScrollView>
@@ -195,26 +199,25 @@ export default function LogsScreen() {
         <List.Item
           title="Log Capture"
           description={enabled ? "Capturing logs is enabled" : "Capturing logs is disabled"}
-          left={props => <List.Icon {...props} icon="text-box-outline" />}
+          left={(props) => <List.Icon {...props} icon="text-box-outline" />}
           right={() => (
-            <Switch value={enabled} onValueChange={(value) => {
-              setEnabled(value);
-              // Force refresh to update log list
-              loadLogs();
-            }} />
+            <Switch
+              value={enabled}
+              onValueChange={(value) => {
+                setEnabled(value);
+                // Force refresh to update log list
+                loadLogs();
+              }}
+            />
           )}
         />
         <Divider />
         <List.Item
           title="Secure Mode"
           description={secureMode ? "Sensitive data is redacted" : "All data is visible in logs"}
-          left={props => <List.Icon {...props} icon="shield-outline" />}
+          left={(props) => <List.Icon {...props} icon="shield-outline" />}
           right={() => (
-            <Switch 
-              value={secureMode} 
-              onValueChange={setSecureMode} 
-              disabled={!enabled} 
-            />
+            <Switch value={secureMode} onValueChange={setSecureMode} disabled={!enabled} />
           )}
         />
       </View>
@@ -271,8 +274,8 @@ const styles = StyleSheet.create({
   },
   centerContent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 16,
   },
   loadingText: {
@@ -285,9 +288,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   logHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 4,
   },
   timestamp: {
@@ -299,8 +302,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   levelText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
   },
   message: {
     marginVertical: 4,
@@ -312,14 +315,14 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   metadataLabel: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 2,
   },
   metadataScroll: {
     maxHeight: 100,
   },
   metadata: {
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
   },
   buttonContainer: {
     padding: 16,
