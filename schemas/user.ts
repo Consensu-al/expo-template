@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Basic user schema
@@ -11,11 +11,13 @@ export const userSchema = z.object({
   createdAt: z.date().or(z.string().datetime()),
   updatedAt: z.date().or(z.string().datetime()).optional(),
   avatarUrl: z.string().url().optional().nullable(),
-  preferences: z.object({
-    darkMode: z.boolean().default(false),
-    notifications: z.boolean().default(true),
-    language: z.string().default('en'),
-  }).optional(),
+  preferences: z
+    .object({
+      darkMode: z.boolean().default(false),
+      notifications: z.boolean().default(true),
+      language: z.string().default("en"),
+    })
+    .optional(),
   metadata: z.record(z.string(), z.any()).optional(),
 });
 

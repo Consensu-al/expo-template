@@ -1,6 +1,7 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Card, Divider, List, Text, useTheme } from "react-native-paper";
+import { type Href, Link } from "expo-router";
 
 export default function ExploreScreen() {
   const theme = useTheme();
@@ -94,6 +95,17 @@ export default function ExploreScreen() {
             View Repository
           </Button>
         </Card.Actions>
+      </Card>
+
+      <Card style={[styles.card, dynamicStyles.card]}>
+        <Card.Title title="Examples" />
+        <Card.Content>
+          <Link href={"/examples" as Href} asChild>
+            <Button mode="text" icon="code-tags" style={styles.docButton}>
+              All Examples
+            </Button>
+          </Link>
+        </Card.Content>
       </Card>
 
       <Card style={[styles.card, dynamicStyles.card]}>

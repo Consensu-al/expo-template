@@ -1,6 +1,4 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { logger } from "@/lib/logger";
-import { createId } from "@paralleldrive/cuid2";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";

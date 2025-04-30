@@ -1,10 +1,10 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
-const { getDefaultConfig } = require('expo/metro-config');
+const { getDefaultConfig } = require("expo/metro-config");
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
 // Add additional file extensions to be processed by Metro
-config.resolver.sourceExts.push('sql');
+config.resolver.sourceExts.push("sql");
 
 module.exports = config;

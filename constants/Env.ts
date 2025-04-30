@@ -80,16 +80,17 @@ export const Env: EnvType = {
    * Logger configuration
    */
   logger: {
-    level: extra.logLevel || (__DEV__ ? "debug" : "info"),
+    level: extra.logLevel || "info",
   },
 
   /**
    * Current environment (development, staging, production)
    */
-  environment: extra.environment || (__DEV__ ? "development" : "production"),
+  environment: extra.environment || "production",
 
   /**
    * Whether the app is running in development mode
+   * Default to false for production builds
    */
-  isDevelopment: __DEV__,
+  isDevelopment: false,
 };

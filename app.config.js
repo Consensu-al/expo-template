@@ -32,14 +32,20 @@ module.exports = {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
       },
-      package: process.env.ANDROID_PACKAGE_NAME || "com.consensual.template",
-      permissions: [],
+      package: process.env.ANDROID_PACKAGE_NAME || "al.consensu.expotemplate",
+      permissions: [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
       jsEngine: "hermes",
     },
     web: {
       favicon: "./assets/images/favicon.png",
     },
-    plugins: ["expo-router"],
+    plugins: [
+      "expo-router",
+      "expo-sqlite"
+    ],
     experiments: {
       typedRoutes: true,
       tsconfigPaths: true,
@@ -61,9 +67,9 @@ module.exports = {
       enableAnalytics: process.env.EXPO_PUBLIC_ENABLE_ANALYTICS === "true",
       enableCrashReporting: process.env.EXPO_PUBLIC_ENABLE_CRASH_REPORTING === "true",
       // Logger configuration
-      logLevel: process.env.EXPO_PUBLIC_LOG_LEVEL || (__DEV__ ? "debug" : "info"),
+      logLevel: process.env.EXPO_PUBLIC_LOG_LEVEL || "info",
       // Environment indicator
-      environment: process.env.EXPO_PUBLIC_ENVIRONMENT || (__DEV__ ? "development" : "production"),
+      environment: process.env.EXPO_PUBLIC_ENVIRONMENT || "production",
     },
   },
 };
