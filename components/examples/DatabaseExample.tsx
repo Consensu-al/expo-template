@@ -1,65 +1,114 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, ActivityIndicator } from "react-native";
-import { Button, Card, Text, useTheme } from "react-native-paper";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { Button, Card, Text, useTheme, IconButton, TextInput, Checkbox, List } from "react-native-paper";
 import { useDatabase } from "@/db/provider";
 import { eq } from "drizzle-orm";
-import { settingsTable } from "@/db/schema";
+import { todosTable, type Todo } from "@/db/schema";
+import { createId } from "@paralleldrive/cuid2";
+import { FlashList } from "@shopify/flash-list";
 
 /**
  * DatabaseExample component
  * 
- * This component demonstrates how to use the database integration in the app.
- * It shows how to:
- * 1. Get data from a database-backed Zustand store
- * 2. Directly interact with the database using drizzle-orm
- * 3. Visualize database operations
+ * This component demonstrates how to use the database integration in the app
+ * with a simple to-do list example that uses direct database operations
+ * without any state management library.
  */
 export default function DatabaseExample() {
   const theme = useTheme();
   const { db, isDbReady } = useDatabase();
-  const { settings, isLoading, error, resetSettings } = useSettingsStore();
-  const [dbRecord, setDbRecord] = useState<string | null>(null);
-  const [isLoadingRecord, setIsLoadingRecord] = useState(false);
-
-  // Helper function to fetch the raw database record
-  const fetchRawRecord = async () => {
-    if (!db || !isDbReady) return;
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [newTodoText, setNewTodoText] = useState("");
+  
+  // Load todos when component mounts
+  useEffect(() => {
+    if (isDbReady && db) {
+      loadTodos();
+    }
+  }, [isDbReady, db]);
+  
+  // Load todos from database
+  const loadTodos = async () => {
+    if (!db) return;
     
-    setIsLoadingRecord(true);
+    setIsLoading(true);
     try {
-      const record = await db
-        .select()
-        .from(settingsTable)
-        .where(eq(settingsTable.key, "appSettings"))
-        .get();
-      
-      if (record) {
-        setDbRecord(JSON.stringify(record, null, 2));
-      } else {
-        setDbRecord("No settings record found in database");
-      }
+      const result = await db.select().from(todosTable).orderBy(todosTable.createdAt);
+      setTodos(result);
     } catch (error) {
-      console.error("Error fetching raw record:", error);
-      setDbRecord(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
+      console.error("Error loading todos:", error);
     } finally {
-      setIsLoadingRecord(false);
+      setIsLoading(false);
+    }
+  };
+  
+  // Add a new todo
+  const addTodo = async () => {
+    if (!db || !newTodoText.trim()) return;
+    
+    try {
+      const newTodo = {
+        id: createId(),
+        title: newTodoText.trim(),
+        completed: false,
+        createdAt: new Date().toISOString(),
+      };
+      
+      await db.insert(todosTable).values(newTodo);
+      setNewTodoText("");
+      loadTodos();
+    } catch (error) {
+      console.error("Error adding todo:", error);
+    }
+  };
+  
+  // Toggle todo completion status
+  const toggleTodo = async (id: string, completed: boolean) => {
+    if (!db) return;
+    
+    try {
+      await db
+        .update(todosTable)
+        .set({ completed: !completed })
+        .where(eq(todosTable.id, id));
+      loadTodos();
+    } catch (error) {
+      console.error("Error toggling todo:", error);
+    }
+  };
+  
+  // Delete a todo
+  const deleteTodo = async (id: string) => {
+    if (!db) return;
+    
+    try {
+      await db
+        .delete(todosTable)
+        .where(eq(todosTable.id, id));
+      loadTodos();
+    } catch (error) {
+      console.error("Error deleting todo:", error);
+    }
+  };
+  
+  // Clear all todos
+  const clearAllTodos = async () => {
+    if (!db) return;
+    
+    try {
+      await db.delete(todosTable);
+      loadTodos();
+    } catch (error) {
+      console.error("Error clearing todos:", error);
     }
   };
 
-  if (isLoading) {
+  if (!isDbReady) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
-        <Text style={{ marginTop: 16 }}>Loading settings from database...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={{ color: theme.colors.error }}>Error: {error}</Text>
+        <Text style={{ marginTop: 16 }}>Initializing database...</Text>
       </View>
     );
   }
@@ -67,50 +116,83 @@ export default function DatabaseExample() {
   return (
     <View style={styles.container}>
       <Card style={styles.card}>
-        <Card.Title title="Database Integration Example" />
+        <Card.Title title="SQLite Database Example" subtitle="Simple Todo List" />
         <Card.Content>
           <Text variant="bodyMedium" style={styles.paragraph}>
-            This example demonstrates how the app uses a generic key-value database pattern
-            with Drizzle ORM and Zustand to store application settings. No schema changes
-            are needed when adding new settings.
+            This example demonstrates direct database operations using Drizzle ORM
+            with SQLite. Add, toggle, and delete todos to see database operations
+            in action.
           </Text>
           
-          <Text variant="titleMedium" style={styles.sectionTitle}>
-            Current Settings from Zustand Store
-          </Text>
-          <View style={styles.codeBlock}>
-            <Text 
-              variant="bodySmall" 
-              style={[styles.code, { color: theme.colors.onSurfaceVariant }]}
-            >
-              Theme: {settings.appearance.theme}{"\n"}
-              Font Size: {settings.appearance.fontSize}{"\n"}
-              Notifications: {settings.notifications.enabled ? "Enabled" : "Disabled"}
-            </Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              label="New Todo"
+              value={newTodoText}
+              onChangeText={setNewTodoText}
+              style={styles.input}
+              mode="outlined"
+              right={
+                <TextInput.Icon
+                  icon="plus"
+                  onPress={addTodo}
+                  disabled={!newTodoText.trim()}
+                />
+              }
+              onSubmitEditing={addTodo}
+            />
           </View>
           
-          <Text variant="titleMedium" style={styles.sectionTitle}>
-            Raw Database Record
-          </Text>
-          <View style={styles.codeBlock}>
-            {isLoadingRecord ? (
-              <ActivityIndicator size="small" color={theme.colors.primary} />
-            ) : (
-              <Text 
-                variant="bodySmall" 
-                style={[styles.code, { color: theme.colors.onSurfaceVariant }]}
-              >
-                {dbRecord || "Click 'Fetch Raw Record' to view the database entry"}
-              </Text>
-            )}
-          </View>
+          {isLoading ? (
+            <ActivityIndicator style={{ marginVertical: 20 }} />
+          ) : todos.length === 0 ? (
+            <Text style={styles.emptyMessage}>No todos yet. Add one above!</Text>
+          ) : (
+            <View style={styles.listContainer}>
+              <FlashList
+                data={todos}
+                keyExtractor={(item) => item.id}
+                estimatedItemSize={50}
+                renderItem={({ item }) => (
+                  <List.Item
+                    title={item.title}
+                    style={[
+                      styles.todoItem,
+                      item.completed && styles.completedTodo
+                    ]}
+                    left={() => (
+                      <Checkbox
+                        status={item.completed ? "checked" : "unchecked"}
+                        onPress={() => toggleTodo(item.id, item.completed)}
+                      />
+                    )}
+                    right={() => (
+                      <IconButton
+                        icon="delete"
+                        onPress={() => deleteTodo(item.id)}
+                      />
+                    )}
+                  />
+                )}
+              />
+            </View>
+          )}
         </Card.Content>
         <Card.Actions>
-          <Button mode="outlined" onPress={fetchRawRecord} disabled={!isDbReady || isLoadingRecord}>
-            Fetch Raw Record
+          <Button
+            mode="outlined"
+            onPress={loadTodos}
+            icon="refresh"
+            disabled={isLoading}
+          >
+            Refresh
           </Button>
-          <Button mode="outlined" onPress={resetSettings} disabled={!isDbReady || isLoading}>
-            Reset Settings
+          <Button
+            mode="outlined"
+            onPress={clearAllTodos}
+            icon="delete-sweep"
+            disabled={isLoading || todos.length === 0}
+          >
+            Clear All
           </Button>
         </Card.Actions>
       </Card>
@@ -128,26 +210,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
   },
-  errorContainer: {
-    padding: 16,
-  },
   card: {
     marginBottom: 16,
   },
   paragraph: {
     marginBottom: 16,
   },
-  sectionTitle: {
-    marginTop: 16,
+  inputContainer: {
+    marginVertical: 16,
+  },
+  input: {
     marginBottom: 8,
   },
-  codeBlock: {
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: "#f5f5f5",
-    minHeight: 100,
+  listContainer: {
+    height: 300,
+    marginTop: 8,
   },
-  code: {
-    fontFamily: "monospace",
+  todoItem: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
+  completedTodo: {
+    opacity: 0.6,
+  },
+  emptyMessage: {
+    textAlign: "center",
+    marginVertical: 24,
+    fontStyle: "italic",
+  },
+  errorContainer: {
+    padding: 16,
+  }
 });

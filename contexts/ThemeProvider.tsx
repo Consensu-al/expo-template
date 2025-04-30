@@ -51,33 +51,33 @@ function createCustomTheme(isDark: boolean): MD3Theme {
       primaryContainer: isDark ? "#382E00" : "#DDE5FF",
       onPrimary: "#FFFFFF",
       onPrimaryContainer: isDark ? "#FFE08C" : "#001452",
-      
+
       // Secondary colors
       secondary: isDark ? primaryBlue : primaryOrange,
       secondaryContainer: isDark ? "#00164D" : "#FFECBA",
       onSecondary: "#FFFFFF",
       onSecondaryContainer: isDark ? "#DAE1FF" : "#3A2900",
-      
+
       // Tertiary colors
       tertiary: isDark ? "#FFBA3B" : "#0054D2",
       tertiaryContainer: isDark ? "#524200" : "#D8E2FF",
       onTertiary: "#FFFFFF",
       onTertiaryContainer: isDark ? "#FFDF9E" : "#001A45",
-      
+
       // Neutral colors - ensuring light theme has properly light backgrounds
-      background: isDark ? "#1A1C1E" : "#FFFFFF", 
+      background: isDark ? "#1A1C1E" : "#FFFFFF",
       surface: isDark ? "#121416" : "#FFFFFF",
       surfaceVariant: isDark ? "#43474E" : "#F5F5F7",
       onSurfaceVariant: isDark ? "#C3C6CF" : "#43474E",
       outline: isDark ? "#8D9199" : "#73777F",
       outlineVariant: isDark ? "#43474E" : "#E0E2EC",
-      
+
       // Error colors
       error: isDark ? "#FFB4AB" : "#BA1A1A",
       errorContainer: isDark ? "#93000A" : "#FFDAD6",
       onError: isDark ? "#690005" : "#FFFFFF",
       onErrorContainer: isDark ? "#FFDAD6" : "#410002",
-      
+
       // Core interaction colors
       onBackground: isDark ? "#E2E2E6" : "#1A1C1E",
       onSurface: isDark ? "#E2E2E6" : "#1A1C1E",
@@ -93,7 +93,7 @@ function createCustomTheme(isDark: boolean): MD3Theme {
       inverseOnSurface: isDark ? "#1A1C1E" : "#F1F0F4",
       inversePrimary: isDark ? "#0054D2" : "#B1C5FF",
       shadow: isDark ? "#000000" : "#000000",
-      surfaceTint: isDark ? primaryOrange : primaryBlue,
+      // Remove surfaceTint as it's not in the MD3Colors type
       scrim: isDark ? "#000000" : "#000000",
     },
     // You can customize more theme properties here
@@ -117,27 +117,26 @@ interface ThemeProviderProps {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   // Get the device color scheme
   const systemColorScheme = useColorScheme();
-  
+
   // Get user's theme preference from the store
   const { themeMode, setThemeMode } = useThemeStore();
 
-  // Determine if we should use dark mode based on theme preference
-  const determineIsDarkMode = (): boolean => {
-    if (themeMode === "system") {
-      return systemColorScheme === "dark";
-    }
-    return themeMode === "dark";
-  };
-
-  // State to track dark mode
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(determineIsDarkMode());
+  // State to track dark mode - initialize with a direct calculation
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(
+    themeMode === "system" ? systemColorScheme === "dark" : themeMode === "dark"
+  );
 
   // Create theme based on dark mode state
   const theme = createCustomTheme(isDarkMode);
 
   // Update theme when system theme or user preference changes
   useEffect(() => {
-    setIsDarkMode(determineIsDarkMode());
+    // Calculate dark mode directly in the effect to avoid function reference issues
+    const newIsDarkMode = themeMode === "system" 
+      ? systemColorScheme === "dark" 
+      : themeMode === "dark";
+      
+    setIsDarkMode(newIsDarkMode);
   }, [systemColorScheme, themeMode]);
 
   // Toggle theme function that can be passed to components

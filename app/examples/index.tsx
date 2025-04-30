@@ -30,10 +30,26 @@ export default function ExamplesIndex() {
           <Divider />
           <List.Item
             title="Database Integration"
-            description="State persistence with AsyncStorage and Drizzle ORM"
+            description="CRUD operations with Drizzle ORM and SQLite"
             left={(props) => <List.Icon {...props} icon="database" color={theme.colors.primary} />}
             right={(props) => <List.Icon {...props} icon="chevron-right" />}
             onPress={() => router.push("/examples/database" as Href)}
+          />
+          <Divider />
+          <List.Item
+            title="Zustand State Management"
+            description="Global state with persistence using Zustand"
+            left={(props) => <List.Icon {...props} icon="state-machine" color={theme.colors.primary} />}
+            right={(props) => <List.Icon {...props} icon="chevron-right" />}
+            onPress={() => router.push("/examples/zustand" as Href)}
+          />
+          <Divider />
+          <List.Item
+            title="Markdown Rendering"
+            description="Build-time markdown to component conversion"
+            left={(props) => <List.Icon {...props} icon="markdown" color={theme.colors.primary} />}
+            right={(props) => <List.Icon {...props} icon="chevron-right" />}
+            onPress={() => router.push("/examples/markdown" as Href)}
           />
         </Card.Content>
       </Card>

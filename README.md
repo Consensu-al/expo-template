@@ -9,10 +9,11 @@ A modern Expo template with a robust stack for building React Native application
 - ✅ **Zod** - TypeScript-first schema validation
 - 🔐 **Expo Secure Store** - Secure local storage
 - 🎨 **React Native Paper** - Material Design components and icons
-- 📝 **@consensu.al/react-native-logger** - Structured logging with hooks support
+- 💾 **Drizzle ORM** - SQLite database with type-safe queries
 - ⚡ **@shopify/flash-list** - High-performance lists
 - 🧩 **@paralleldrive/cuid2** - Collision-resistant IDs
 - 🔍 **Biome** - Fast linting and formatting
+- 📄 **Markdown Rendering** - Build-time markdown to component conversion
 - 🌐 **Environment Variables** - Runtime configuration with Expo's EXPO_PUBLIC_ system
 
 ## Installation
@@ -61,12 +62,27 @@ your-app/
 │   │   ├── index.tsx     # Home screen
 │   │   └── explore.tsx   # Explore screen
 │   ├── about/            # About screen (accessible via drawer)
+│   ├── examples/         # Example screens
 │   ├── settings/         # Settings screen (accessible via drawer)
 │   └── _layout.tsx       # Root layout with drawer navigator
 ├── assets/               # Static assets
+│   ├── fonts/            # Custom fonts
+│   ├── images/           # App icons and images
+│   ├── markdown/         # Markdown content files
+│   └── generated/        # Auto-generated content
 ├── components/           # Reusable components
+│   ├── examples/         # Example components
+│   ├── forms/            # Form components
+│   └── ui/               # UI components
 ├── constants/            # App constants
+├── contexts/             # React contexts
+├── db/                   # Database configuration
+│   ├── migrations/       # Database migrations
+│   └── schema.ts         # Database schema
 ├── hooks/                # Custom React hooks
+├── lib/                  # Utility functions
+├── schemas/              # Zod validation schemas 
+├── scripts/              # Build and utility scripts
 ├── stores/               # Zustand stores
 ├── .env.example          # Example environment variables
 ├── .env                  # Your environment variables (gitignored)
@@ -81,9 +97,10 @@ your-app/
 - **State Management** - Zustand for global state
 - **Form Validation** - Zod for schema validation
 - **Optimized Lists** - FlashList for better performance
-- **Structured Logging** - Consistent logging with react-native-logger
+- **Database Support** - SQLite persistence with Drizzle ORM
 - **Environment Variables** - Runtime configuration using Expo's public vars
 - **Feature Flags** - Toggle features via environment variables
+- **Markdown Rendering** - Convert markdown files to React Native components
 
 ## Development Commands
 
@@ -108,6 +125,43 @@ bun run format
 
 # Run tests
 bun run test
+
+# Generate markdown components
+bun run generate-content
+```
+
+## Markdown Rendering
+
+The template includes a build-time markdown-to-component conversion system that allows you to:
+
+- Convert markdown files to React Native components
+- Display rich formatted content with proper styling
+- Support for code blocks with syntax highlighting
+- Proper theme support for both light and dark mode
+- Tables, lists, links, and other markdown elements
+
+Markdown files are processed during build time, which means:
+
+1. No runtime parsing overhead
+2. Type-safe components 
+3. Optimized for performance
+
+To add a new markdown file to be converted:
+
+1. Add your markdown file to `/assets/markdown/`
+2. Update the `MARKDOWN_SOURCES` array in `/scripts/generate-markdown-components.js`
+3. Run `bun run generate-content`
+
+The generated components can be imported and used with theme support:
+
+```tsx
+import { ReadmeContent } from '@/assets/generated/ReadmeContent';
+// or import { ExampleMarkdownContent } from '@/assets/generated/ExampleMarkdownContent';
+
+function MyScreen() {
+  const theme = useTheme();
+  return <ReadmeContent theme={theme} />;
+}
 ```
 
 ## Environment Configuration
@@ -186,6 +240,17 @@ The template supports different environment files:
 
 Environment-specific files take precedence over the default `.env` file when the corresponding environment is active.
 
+## Example Screens
+
+The template includes several example screens to help you get started:
+
+- **Database Example** - CRUD operations with Drizzle ORM and SQLite
+- **Validation Example** - Form validation using Zod schemas
+- **Zustand Example** - State management with persistence
+- **Markdown Example** - Rendering markdown content with theme support
+
+These examples demonstrate best practices for common tasks in React Native apps. They can be accessed from the Examples section in the app.
+
 ## Learn More
 
 - [Expo Documentation](https://docs.expo.dev/)
@@ -194,4 +259,5 @@ Environment-specific files take precedence over the default `.env` file when the
 - [Drizzle ORM](https://orm.drizzle.team/)
 - [Expo Router](https://docs.expo.dev/router/introduction/)
 - [Expo Environment Variables](https://docs.expo.dev/guides/environment-variables/)
-- [@consensu.al/react-native-logger](https://github.com/consensual/react-native-logger)
+- [Zod Validation](https://zod.dev/)
+- [FlashList](https://shopify.github.io/flash-list/)

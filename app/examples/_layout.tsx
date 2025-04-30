@@ -29,7 +29,13 @@ export default function ExamplesLayout() {
       <Stack.Screen
         name="database"
         options={{
-          title: "Database Examples",
+          title: "Database Example",
+        }}
+      />
+      <Stack.Screen
+        name="zustand"
+        options={{
+          title: "Zustand Example",
         }}
       />
     </Stack>
