@@ -1,61 +1,64 @@
-import { drizzle } from "drizzle-orm/expo-sqlite";
-import { migrate } from "drizzle-orm/expo-sqlite/migrator";
-import { openDatabaseSync } from "expo-sqlite";
+import { open } from "@op-engineering/op-sqlite";
+import { type OPSQLiteDatabase, drizzle } from "drizzle-orm/op-sqlite";
+import { migrate } from "drizzle-orm/op-sqlite/migrator";
+import * as Crypto from "expo-crypto";
+import * as SecureStore from "expo-secure-store";
 
-import migrations from "./migrations/migrations";
 import { DATABASE_NAME } from "../constants/Database";
+import migrations from "./migrations/migrations";
 
-// Single database instance
-let _db = null;
+const AES_KEY_STORE = "AES_ENCRYPTION_KEY";
 
-// Initialize database and run migrations
-export const initialize = async () => {
-  // Return existing instance if already initialized
-  if (_db) return _db;
-
+/**
+ * Gets or creates an AES encryption key
+ * @returns Promise<string> The encryption key
+ */
+export const getAesEncryptionKey = async (): Promise<string> => {
   try {
-    // Open SQLite database
-    console.log(`Opening database: ${DATABASE_NAME}`);
-    const sqliteDb = openDatabaseSync(DATABASE_NAME);
+    // Try to retrieve existing key
+    let key = await SecureStore.getItemAsync(AES_KEY_STORE);
 
-    // Initialize Drizzle ORM with the SQLite connection
-    _db = drizzle(sqliteDb);
+    // If no key exists, create a new one
+    if (!key) {
+      // Generate 32 random bytes (256 bits) for AES-256
+      const randomBytes = await Crypto.getRandomBytesAsync(32);
 
-    // Run migrations
-    console.log("Running migrations...");
-    await migrate(_db, migrations);
-    console.log("Migrations completed successfully");
+      // Convert to base64 string
+      key = Buffer.from(randomBytes).toString("base64");
 
-    return _db;
+      // Store the new key securely
+      await SecureStore.setItemAsync(AES_KEY_STORE, key);
+    }
+
+    return key;
   } catch (error) {
-    console.error("Database initialization error:", error);
+    console.error("Error handling AES encryption key:", error);
     throw error;
   }
 };
 
-// Get current database instance
-export const getDb = () => _db;
+let db: OPSQLiteDatabase;
 
-// Check if migrations have completed
-export const checkMigrationsCompleted = async () => {
+export const initialize = async (): Promise<OPSQLiteDatabase> => {
+  console.log("Opening database with encryption");
+  const fpDb = open({
+    name: DATABASE_NAME,
+    encryptionKey: await getAesEncryptionKey(),
+  });
+  db = drizzle(fpDb);
+
   try {
-    if (!_db) {
-      return { hasCompleted: false, error: new Error("Database not initialized") };
-    }
-
-    // Simple query to check if migrations table exists
-    const result = await _db.execute(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name='_drizzle_migrations'",
-    );
-
-    return {
-      hasCompleted: result.rows.length > 0,
-      error: null,
-    };
+    await migrate(db, migrations);
   } catch (error) {
-    return {
-      hasCompleted: false,
-      error,
-    };
+    throw new Error(error instanceof Error ? error.message : String(error));
   }
+
+  return Promise.resolve(db);
+};
+
+export const getDb = async (): Promise<OPSQLiteDatabase> => {
+  if (db) {
+    return Promise.resolve(db);
+  }
+  return initialize();
 };

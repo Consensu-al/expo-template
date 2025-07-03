@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Card, Divider, Text, useTheme } from "react-native-paper";
-import { useDatabase } from "@/db/provider";
+import { getDb } from "@/db/drizzle";
 import { DATABASE_NAME } from "@/constants/Database";
 
 /**
@@ -13,7 +13,26 @@ import { DATABASE_NAME } from "@/constants/Database";
  */
 export default function DatabaseDebug() {
   const theme = useTheme();
-  const { db, isDbReady, error } = useDatabase();
+  const [dbStatus, setDbStatus] = useState<{
+    isConnected: boolean;
+    error: string | null;
+  }>({ isConnected: false, error: null });
+  
+  useEffect(() => {
+    const checkDatabase = async () => {
+      try {
+        const db = await getDb();
+        setDbStatus({ isConnected: !!db, error: null });
+      } catch (error) {
+        setDbStatus({ 
+          isConnected: false, 
+          error: error instanceof Error ? error.message : "Unknown error" 
+        });
+      }
+    };
+    
+    checkDatabase();
+  }, []);
   
   return (
     <ScrollView style={styles.container}>
@@ -22,12 +41,13 @@ export default function DatabaseDebug() {
         <Card.Content>
           <Text variant="titleSmall">Database Connection</Text>
           <View style={styles.infoBlock}>
-            <Text>Database Ready: {isDbReady ? "Yes" : "No"}</Text>
-            <Text>Database Instance: {db ? "Connected" : "Not Connected"}</Text>
+            <Text>Database Ready: {dbStatus.isConnected ? "Yes" : "No"}</Text>
+            <Text>Database Instance: {dbStatus.isConnected ? "Connected" : "Not Connected"}</Text>
             <Text>Database Name: {DATABASE_NAME}</Text>
-            {error && (
+            <Text>Encryption: AES-256 (Enabled)</Text>
+            {dbStatus.error && (
               <Text style={{ color: theme.colors.error }}>
-                Error: {error.message}
+                Error: {dbStatus.error}
               </Text>
             )}
           </View>
@@ -36,9 +56,10 @@ export default function DatabaseDebug() {
           
           <Text variant="titleSmall">Database Information</Text>
           <View style={styles.infoBlock}>
-            <Text>SQLite is being used for persistent storage.</Text>
+            <Text>Encrypted SQLite is being used for persistent storage.</Text>
             <Text>AsyncStorage is used for Zustand state persistence.</Text>
-            {db && (
+            <Text>Database uses @op-engineering/op-sqlite for better performance.</Text>
+            {dbStatus.isConnected && (
               <Text style={{ fontStyle: 'italic', marginTop: 8 }}>
                 Database is currently initialized and operational.
               </Text>

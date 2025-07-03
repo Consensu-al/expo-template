@@ -23,19 +23,13 @@ import {
   DrawerTitle,
 } from '@/components/ui/Drawer';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { DatabaseProvider, useDatabase } from '@/db/provider';
 import { ThemeProvider } from '@/contexts/ThemeProvider';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // Wrap the layout content with DatabaseProvider
-  return (
-    <DatabaseProvider>
-      <RootLayoutContent />
-    </DatabaseProvider>
-  );
+  return <RootLayoutContent />;
 }
 
 function RootLayoutContent() {
@@ -47,15 +41,9 @@ function RootLayoutContent() {
   // (2) Context hooks
   const colorScheme = useColorScheme();
   const insets = useSafeAreaInsets();
-  const {
-    isDbReady: isDatabaseInitialized,
-    db,
-    setDatabaseReady,
-  } = useDatabase();
 
   // (3) State hooks
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [dbReady, setDbReady] = useState(false);
 
   // (4) Font hooks
   const [loaded] = useFonts({
@@ -66,30 +54,17 @@ function RootLayoutContent() {
   const theme = colorScheme === 'dark' ? MD3DarkTheme : MD3LightTheme;
 
   // (6) Effect hooks
-  // Effect to check database migrations
+  // Hide the splash screen once fonts are loaded
   useEffect(() => {
-    // Skip if no database
-    if (!db) return;
-
-    // Mark database as ready immediately
-    // Migrations are already run during database initialization
-    setDatabaseReady();
-    setDbReady(true);
-    console.log('Database ready');
-  }, [db, setDatabaseReady]);
-
-  // Hide the splash screen once fonts are loaded and db is ready
-  useEffect(() => {
-    if (loaded && dbReady) {
+    if (loaded) {
       (async () => {
         try {
-          // Log app startup with additional info about the database state
+          // Log app startup
           const appVersion = Constants.expoConfig?.version || '1.0.0';
           console.log('Application started', {
             colorScheme,
             appStartTime: new Date().toISOString(),
             appVersion,
-            dbReady,
           });
         } catch (error) {
           console.error('Failed during app startup:', error);
@@ -99,15 +74,13 @@ function RootLayoutContent() {
         }
       })();
     }
-  }, [loaded, dbReady, colorScheme]);
+  }, [loaded, colorScheme]);
 
-  if (!loaded || !dbReady) {
+  if (!loaded) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 20 }}>
-          {!loaded ? 'Loading fonts...' : 'Initializing database...'}
-        </Text>
+        <Text style={{ marginTop: 20 }}>Loading fonts...</Text>
       </View>
     );
   }
@@ -122,10 +95,11 @@ function RootLayoutContent() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Suspense fallback={<ActivityIndicator size="large" />}>
-        <ThemeProvider>
-          <View style={{ flex: 1 }}>
-            <StatusBar style="auto" />
+      <PaperProvider theme={theme}>
+        <Suspense fallback={<ActivityIndicator size="large" />}>
+          <ThemeProvider>
+            <View style={{ flex: 1 }}>
+              <StatusBar style="auto" />
 
             {/* Main App View with Custom Header */}
             <Appbar.Header
@@ -172,9 +146,10 @@ function RootLayoutContent() {
                 />
               </DrawerContent>
             </Drawer>
-          </View>
-        </ThemeProvider>
-      </Suspense>
+            </View>
+          </ThemeProvider>
+        </Suspense>
+      </PaperProvider>
     </GestureHandlerRootView>
   );
 }

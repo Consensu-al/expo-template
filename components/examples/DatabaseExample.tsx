@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { Button, Card, Text, useTheme, IconButton, TextInput, Checkbox, List } from "react-native-paper";
-import { useDatabase } from "@/db/provider";
+import { getDb } from "@/db/drizzle";
 import { eq } from "drizzle-orm";
 import { todosTable, type Todo } from "@/db/schema";
 import { createId } from "@paralleldrive/cuid2";
@@ -16,24 +16,20 @@ import { FlashList } from "@shopify/flash-list";
  */
 export default function DatabaseExample() {
   const theme = useTheme();
-  const { db, isDbReady } = useDatabase();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [newTodoText, setNewTodoText] = useState("");
   
   // Load todos when component mounts
   useEffect(() => {
-    if (isDbReady && db) {
-      loadTodos();
-    }
-  }, [isDbReady, db]);
+    loadTodos();
+  }, []);
   
   // Load todos from database
   const loadTodos = async () => {
-    if (!db) return;
-    
     setIsLoading(true);
     try {
+      const db = await getDb();
       const result = await db.select().from(todosTable).orderBy(todosTable.createdAt);
       setTodos(result);
     } catch (error) {
@@ -45,9 +41,10 @@ export default function DatabaseExample() {
   
   // Add a new todo
   const addTodo = async () => {
-    if (!db || !newTodoText.trim()) return;
+    if (!newTodoText.trim()) return;
     
     try {
+      const db = await getDb();
       const newTodo = {
         id: createId(),
         title: newTodoText.trim(),
@@ -65,9 +62,8 @@ export default function DatabaseExample() {
   
   // Toggle todo completion status
   const toggleTodo = async (id: string, completed: boolean) => {
-    if (!db) return;
-    
     try {
+      const db = await getDb();
       await db
         .update(todosTable)
         .set({ completed: !completed })
@@ -80,9 +76,8 @@ export default function DatabaseExample() {
   
   // Delete a todo
   const deleteTodo = async (id: string) => {
-    if (!db) return;
-    
     try {
+      const db = await getDb();
       await db
         .delete(todosTable)
         .where(eq(todosTable.id, id));
@@ -94,24 +89,14 @@ export default function DatabaseExample() {
   
   // Clear all todos
   const clearAllTodos = async () => {
-    if (!db) return;
-    
     try {
+      const db = await getDb();
       await db.delete(todosTable);
       loadTodos();
     } catch (error) {
       console.error("Error clearing todos:", error);
     }
   };
-
-  if (!isDbReady) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
-        <Text style={{ marginTop: 16 }}>Initializing database...</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
